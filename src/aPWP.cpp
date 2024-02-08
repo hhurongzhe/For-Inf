@@ -540,9 +540,9 @@ double potential_chiral_nn(const std::vector<double> &p_out, int s1_out, int s2_
 
     for (size_t i = 0; i < component_vec.size(); ++i)
     {
-        component_vec[i] = lo_contact[i] + one_pion_exchange[i];
-        component_vec[i] = nlo_contact[i] + nlo_two_pion_exchange[i];
-        component_vec[i] = n2lo_two_pion_exchange[i];
+        component_vec[i] += lo_contact[i] + one_pion_exchange[i];
+        component_vec[i] += nlo_contact[i] + nlo_two_pion_exchange[i];
+        component_vec[i] += n2lo_two_pion_exchange[i];
     }
 
     // total coefficients.
