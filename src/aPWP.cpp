@@ -264,7 +264,7 @@ std::vector<double> potential_lo_contact(double ppx, double ppy, double ppz, dou
     f[1] = f[1] + lecs.C_T_nn;
 
     double Lambda = lecs.Lambda;
-    int n = 2;
+    int n = 3;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
@@ -297,7 +297,7 @@ std::vector<double> potential_nlo_contact(double ppx, double ppy, double ppz, do
     f[5] = f[5] + lecs.C_6;
 
     double Lambda = lecs.Lambda;
-    int n = 2;
+    int n = 3;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
@@ -359,7 +359,7 @@ std::vector<double> potential_one_pion_exchange_neutral(double ppx, double ppy, 
     f[5] = f[5] + prefactor / (q2 + Mpi_neutral * Mpi_neutral);
 
     double Lambda = lecs.Lambda;
-    int n = 2;
+    int n = 3;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
@@ -385,7 +385,7 @@ std::vector<double> potential_one_pion_exchange_charged(double ppx, double ppy, 
     f[5] = f[5] + prefactor / (q2 + Mpi_charged * Mpi_charged);
 
     double Lambda = lecs.Lambda;
-    int n = 2;
+    int n = 3;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
@@ -457,7 +457,7 @@ std::vector<double> potential_nlo_two_pion_exchange(double ppx, double ppy, doub
     f[5] = f[5] + f6;
 
     double Lambda = lecs.Lambda;
-    int n = 2;
+    int n = 3;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
