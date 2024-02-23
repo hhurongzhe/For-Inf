@@ -563,7 +563,9 @@ double potential_chiral_nn(const std::vector<double> &p_out, int s1_out, int s2_
     return potential_auto(f1, f2, f3, f4, f5, f6, ppx, ppy, ppz, px, py, pz, s1_out, s2_out, s1_in, s2_in) * min_rel / twopicubic;
 }
 
-int main()
+// N2LO-opt nn potential.
+double potential_nn_n2loopt(const std::vector<double> &p_out, int s1_out, int s2_out,
+                            const std::vector<double> &p_in, int s1_in, int s2_in)
 {
     // N2LO-opt LECs.
     constexpr double Lambda = 500;
@@ -585,17 +587,6 @@ int main()
     auto lecs_tuple_pw = std::make_tuple(CC1s0nn, CC3s1, C1s0, C3p0, C1p1, C3p1, C3s1, C3sd1, C3p2);
     auto lecs_tuple_op = lecs_from_pw_to_op(lecs_tuple_pw);
 
-    // print LECs.
-    std::cout << "operator LECs: " << std::get<0>(lecs_tuple_op) << ", "
-              << std::get<1>(lecs_tuple_op) << ", "
-              << std::get<2>(lecs_tuple_op) << ", "
-              << std::get<3>(lecs_tuple_op) << ", "
-              << std::get<4>(lecs_tuple_op) << ", "
-              << std::get<5>(lecs_tuple_op) << ", "
-              << std::get<6>(lecs_tuple_op) << ", "
-              << std::get<7>(lecs_tuple_op) << ", "
-              << std::get<8>(lecs_tuple_op) << std::endl;
-
     // store LECs in the struct.
     LECs_op lecs_op;
     lecs_op.Lambda = Lambda;
@@ -613,10 +604,67 @@ int main()
     lecs_op.C_6 = std::get<7>(lecs_tuple_op);
     lecs_op.C_7 = std::get<8>(lecs_tuple_op);
 
+    return potential_chiral_nn(p_out, s1_out, s2_out, p_in, s1_in, s2_in, lecs_op);
+}
+
+// main shows how to use functions written above.
+int main()
+{
+    // first you define LECs (usually in partial-wave basis).
+    // N2LO-opt LECs.
+    constexpr double Lambda = 500;
+    constexpr double Lambda_tilde = 700;
+    constexpr double c1 = -0.91863953 * 1e-3;
+    constexpr double c3 = -3.88868749 * 1e-3;
+    constexpr double c4 = 4.31032716 * 1e-3;
+    constexpr double CC1s0nn = -0.15176475 * 1e-2;
+    constexpr double CC3s1 = -0.15843418 * 1e-2;
+    constexpr double C1s0 = 2.40402194 * 1e-8;
+    constexpr double C3p0 = 1.26339076 * 1e-8;
+    constexpr double C1p1 = 0.41704554 * 1e-8;
+    constexpr double C3p1 = -0.78265850 * 1e-8;
+    constexpr double C3s1 = 0.92838466 * 1e-8;
+    constexpr double C3sd1 = 0.61814142 * 1e-8;
+    constexpr double C3p2 = -0.67780851 * 1e-8;
+
+    // second, transform to operator basis before aPWP.
+    auto lecs_tuple_pw = std::make_tuple(CC1s0nn, CC3s1, C1s0, C3p0, C1p1, C3p1, C3s1, C3sd1, C3p2);
+    auto lecs_tuple_op = lecs_from_pw_to_op(lecs_tuple_pw);
+
+    // print LECs.
+    std::cout << "operator LECs: " << std::get<0>(lecs_tuple_op) << ", "
+              << std::get<1>(lecs_tuple_op) << ", "
+              << std::get<2>(lecs_tuple_op) << ", "
+              << std::get<3>(lecs_tuple_op) << ", "
+              << std::get<4>(lecs_tuple_op) << ", "
+              << std::get<5>(lecs_tuple_op) << ", "
+              << std::get<6>(lecs_tuple_op) << ", "
+              << std::get<7>(lecs_tuple_op) << ", "
+              << std::get<8>(lecs_tuple_op) << std::endl;
+
+    // third, store LECs in the struct.
+    LECs_op lecs_op;
+    lecs_op.Lambda = Lambda;
+    lecs_op.Lambda_tilde = Lambda_tilde;
+    lecs_op.c_1 = c1;
+    lecs_op.c_3 = c3;
+    lecs_op.c_4 = c4;
+    lecs_op.C_S_nn = std::get<0>(lecs_tuple_op);
+    lecs_op.C_T_nn = std::get<1>(lecs_tuple_op);
+    lecs_op.C_1 = std::get<2>(lecs_tuple_op);
+    lecs_op.C_2 = std::get<3>(lecs_tuple_op);
+    lecs_op.C_3 = std::get<4>(lecs_tuple_op);
+    lecs_op.C_4 = std::get<5>(lecs_tuple_op);
+    lecs_op.C_5 = std::get<6>(lecs_tuple_op);
+    lecs_op.C_6 = std::get<7>(lecs_tuple_op);
+    lecs_op.C_7 = std::get<8>(lecs_tuple_op);
+
+    // define momentum you wish to calculate.
     // 3-dim momentum vectors p, p'.
     std::vector<double> p_out = {0, 200, 300};
     std::vector<double> p_in = {100, 200, 300};
 
+    // finally, calculate matrix elements.
     for (int s1_out = -1; s1_out <= 1; s1_out = s1_out + 2)
     {
         for (int s2_out = -1; s2_out <= 1; s2_out = s2_out + 2)
