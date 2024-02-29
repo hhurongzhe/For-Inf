@@ -485,7 +485,7 @@ std::vector<double> potential_n2lo_two_pion_exchange(double ppx, double ppy, dou
     double ffff = pow(fpi, 4);
     double mm = pow(Mpi, 2);
     double f1_part1 = 3.0 * gaga / (16.0 * PI * ffff);
-    double f1_part2 = 2.0 * mm * (lecs.c_3 - 2.0 * lecs.c_1) + lecs.C_3 * qmag * qmag;
+    double f1_part2 = 2.0 * mm * (lecs.c_3 - 2.0 * lecs.c_1) + lecs.c_3 * qmag * qmag;
     double f1_part3 = 2.0 * mm + qmag * qmag;
     double f1_part4 = loop_function_A(qmag, lecs);
     double f1 = f1_part1 * f1_part2 * f1_part3 * f1_part4;
