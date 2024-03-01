@@ -6,7 +6,7 @@
 
 // This is a code to evaluate interaction matrix elements under plane-wave basis using aPWP method,
 // where "potential_chiral_nn" is the primary function.
-// In main(), I provide an example to show how to use it for N2LO-opt interaction.
+// In main(), I provide an example to show how to use it for N2LO-EMN500 interaction.
 
 // Constants.
 constexpr double gA = 1.29;
@@ -297,7 +297,7 @@ std::vector<double> potential_nlo_contact(double ppx, double ppy, double ppz, do
     f[5] = f[5] + lecs.C_6;
 
     double Lambda = lecs.Lambda;
-    int n = 3;
+    int n = 2;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
@@ -359,7 +359,7 @@ std::vector<double> potential_one_pion_exchange_neutral(double ppx, double ppy, 
     f[5] = f[5] + prefactor / (q2 + Mpi_neutral * Mpi_neutral);
 
     double Lambda = lecs.Lambda;
-    int n = 3;
+    int n = 4;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
@@ -385,7 +385,7 @@ std::vector<double> potential_one_pion_exchange_charged(double ppx, double ppy, 
     f[5] = f[5] + prefactor / (q2 + Mpi_charged * Mpi_charged);
 
     double Lambda = lecs.Lambda;
-    int n = 3;
+    int n = 4;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
@@ -457,7 +457,7 @@ std::vector<double> potential_nlo_two_pion_exchange(double ppx, double ppy, doub
     f[5] = f[5] + f6;
 
     double Lambda = lecs.Lambda;
-    int n = 3;
+    int n = 2;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
@@ -497,7 +497,7 @@ std::vector<double> potential_n2lo_two_pion_exchange(double ppx, double ppy, dou
     f[5] = f[5] + f6;
 
     double Lambda = lecs.Lambda;
-    int n = 3;
+    int n = 2;
     double regulator = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
 
     for (auto &component : f)
@@ -563,28 +563,45 @@ double potential_chiral_nn(const std::vector<double> &p_out, int s1_out, int s2_
     return potential_auto(f1, f2, f3, f4, f5, f6, ppx, ppy, ppz, px, py, pz, s1_out, s2_out, s1_in, s2_in) * min_rel / twopicubic;
 }
 
-// N2LO-opt nn potential.
-double potential_nn_n2loopt(const std::vector<double> &p_out, int s1_out, int s2_out,
-                            const std::vector<double> &p_in, int s1_in, int s2_in)
+// N2LO-EMN500 nn potential.
+double potential_nn_n2loemn500(const std::vector<double> &p_out, int s1_out, int s2_out,
+                               const std::vector<double> &p_in, int s1_in, int s2_in)
 {
-    // N2LO-opt LECs.
+    // N2LO-EMN500 LECs.
     constexpr double Lambda = 500;
-    constexpr double Lambda_tilde = 700;
-    constexpr double c1 = -0.91863953 * 1e-3;
-    constexpr double c3 = -3.88868749 * 1e-3;
-    constexpr double c4 = 4.31032716 * 1e-3;
-    constexpr double CC1s0nn = -0.15176475 * 1e-2;
-    constexpr double CC3s1 = -0.15843418 * 1e-2;
-    constexpr double C1s0 = 2.40402194 * 1e-8;
-    constexpr double C3p0 = 1.26339076 * 1e-8;
-    constexpr double C1p1 = 0.41704554 * 1e-8;
-    constexpr double C3p1 = -0.78265850 * 1e-8;
-    constexpr double C3s1 = 0.92838466 * 1e-8;
-    constexpr double C3sd1 = 0.61814142 * 1e-8;
-    constexpr double C3p2 = -0.67780851 * 1e-8;
+    constexpr double Lambda_tilde = 650;
+    constexpr double c1 = -0.74 * 1e-3;
+    constexpr double c3 = -3.61 * 1e-3;
+    constexpr double c4 = 2.44 * 1e-3;
+    constexpr double CC1s0nn = -0.1509590 * 1e-2;
+    constexpr double CC3s1 = -0.1505605654300 * 1e-2;
+    constexpr double C1s0 = 2.336086454 * 1e-8;
+    constexpr double C3p0 = 1.0543302570000 * 1e-8;
+    constexpr double C1p1 = 0.1991325690000 * 1e-8;
+    constexpr double C3p1 = -0.8370121810000 * 1e-8;
+    constexpr double C3s1 = 0.4438916900000 * 1e-8;
+    constexpr double C3sd1 = 0.3511511310000 * 1e-8;
+    constexpr double C3p2 = -0.6365462590000 * 1e-8;
+
+    // ! special treatment for C3p1,
+    // because regulator in this channel in NLO contact potential is n=3, while other are n=2.
+    double ppx = p_out[0];
+    double ppy = p_out[1];
+    double ppz = p_out[2];
+    double px = p_in[0];
+    double py = p_in[1];
+    double pz = p_in[2];
+    double ppmag = std::sqrt(ppx * ppx + ppy * ppy + ppz * ppz);
+    double pmag = std::sqrt(px * px + py * py + pz * pz);
+    int n;
+    n = 2;
+    double regulator_n2 = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
+    n = 3;
+    double regulator_n3 = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
+    double regulator_factor_C3p1 = regulator_n3 / regulator_n2;
 
     // transform to operator basis before aPWP.
-    auto lecs_tuple_pw = std::make_tuple(CC1s0nn, CC3s1, C1s0, C3p0, C1p1, C3p1, C3s1, C3sd1, C3p2);
+    auto lecs_tuple_pw = std::make_tuple(CC1s0nn, CC3s1, C1s0, C3p0, C1p1, C3p1 * regulator_factor_C3p1, C3s1, C3sd1, C3p2);
     auto lecs_tuple_op = lecs_from_pw_to_op(lecs_tuple_pw);
 
     // store LECs in the struct.
@@ -611,21 +628,21 @@ double potential_nn_n2loopt(const std::vector<double> &p_out, int s1_out, int s2
 int main()
 {
     // first you define LECs (usually in partial-wave basis).
-    // N2LO-opt LECs.
+    // N2LO-EMN500 LECs.
     constexpr double Lambda = 500;
-    constexpr double Lambda_tilde = 700;
-    constexpr double c1 = -0.91863953 * 1e-3;
-    constexpr double c3 = -3.88868749 * 1e-3;
-    constexpr double c4 = 4.31032716 * 1e-3;
-    constexpr double CC1s0nn = -0.15176475 * 1e-2;
-    constexpr double CC3s1 = -0.15843418 * 1e-2;
-    constexpr double C1s0 = 2.40402194 * 1e-8;
-    constexpr double C3p0 = 1.26339076 * 1e-8;
-    constexpr double C1p1 = 0.41704554 * 1e-8;
-    constexpr double C3p1 = -0.78265850 * 1e-8;
-    constexpr double C3s1 = 0.92838466 * 1e-8;
-    constexpr double C3sd1 = 0.61814142 * 1e-8;
-    constexpr double C3p2 = -0.67780851 * 1e-8;
+    constexpr double Lambda_tilde = 650;
+    constexpr double c1 = -0.74 * 1e-3;
+    constexpr double c3 = -3.61 * 1e-3;
+    constexpr double c4 = 2.44 * 1e-3;
+    constexpr double CC1s0nn = -0.1509590 * 1e-2;
+    constexpr double CC3s1 = -0.1505605654300 * 1e-2;
+    constexpr double C1s0 = 2.336086454 * 1e-8;
+    constexpr double C3p0 = 1.0543302570000 * 1e-8;
+    constexpr double C1p1 = 0.1991325690000 * 1e-8;
+    constexpr double C3p1 = -0.8370121810000 * 1e-8;
+    constexpr double C3s1 = 0.4438916900000 * 1e-8;
+    constexpr double C3sd1 = 0.3511511310000 * 1e-8;
+    constexpr double C3p2 = -0.6365462590000 * 1e-8;
 
     // second, transform to operator basis before aPWP.
     auto lecs_tuple_pw = std::make_tuple(CC1s0nn, CC3s1, C1s0, C3p0, C1p1, C3p1, C3s1, C3sd1, C3p2);
