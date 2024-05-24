@@ -138,9 +138,10 @@ lecs_tuple lecs_from_pw_to_op(const lecs_tuple lecs_pw)
 }
 
 // automated plane-wave projection.
-double potential_auto(double f1, double f2, double f3, double f4, double f5, double f6,
-                      double ppx, double ppy, double ppz, double px, double py, double pz,
-                      int s1_out, int s2_out, int s1_in, int s2_in)
+// real part.
+double potential_auto_real(double f1, double f2, double f3, double f4, double f5, double f6,
+                           double ppx, double ppy, double ppz, double px, double py, double pz,
+                           int s1_out, int s2_out, int s1_in, int s2_in)
 {
     // params f_j : coefficients of operators w_j
     // params ppx, ppy, ppz : final relative momentum p', in MeV
@@ -249,7 +250,120 @@ double potential_auto(double f1, double f2, double f3, double f4, double f5, dou
     }
     else
     {
-        throw std::invalid_argument("Invalid spin configuration in function potential_auto!");
+        throw std::invalid_argument("Invalid spin configuration in function potential_auto_real!");
+    }
+}
+
+// automated plane-wave projection.
+// imag part.
+double potential_auto_imag(double f1, double f2, double f3, double f4, double f5, double f6,
+                           double ppx, double ppy, double ppz, double px, double py, double pz,
+                           int s1_out, int s2_out, int s1_in, int s2_in)
+{
+    // params f_j : coefficients of operators w_j
+    // params ppx, ppy, ppz : final relative momentum p', in MeV
+    // params px, py, pz : initial relative momentum p, in MeV
+    // params s1_out, s2_out : final spin of 2 nucleons(doubled)
+    // params s1_in, s2_in : initial spin of 2 nucleons(doubled)
+    // return : interaction matrix element, in MeV^(-2)
+
+    std::tuple<int, int, int, int> spin_tuple(s1_out, s2_out, s1_in, s2_in);
+
+    if (spin_tuple == std::make_tuple(1, 1, 1, 1))
+    {
+        return 2 * f3 * (ppy * px - ppx * py);
+    }
+    else if (spin_tuple == std::make_tuple(1, 1, 1, -1))
+    {
+        return f4 * ppy * ppz * pow(px, 2) + f3 * ppz * py -
+               f4 * ppx * ppz * px * py - f6 * (ppy - py) * (ppz - pz) -
+               f3 * ppy * pz - f4 * ppx * ppy * px * pz +
+               f4 * pow(ppx, 2) * py * pz - f5 * (ppy + py) * (ppz + pz);
+    }
+    else if (spin_tuple == std::make_tuple(1, 1, -1, 1))
+    {
+        return f4 * ppy * ppz * pow(px, 2) + f3 * ppz * py -
+               f4 * ppx * ppz * px * py - f6 * (ppy - py) * (ppz - pz) -
+               f3 * ppy * pz - f4 * ppx * ppy * px * pz +
+               f4 * pow(ppx, 2) * py * pz - f5 * (ppy + py) * (ppz + pz);
+    }
+    else if (spin_tuple == std::make_tuple(1, 1, -1, -1))
+    {
+        return -2 * f6 * (ppx - px) * (ppy - py) -
+               2 * f5 * (ppx + px) * (ppy + py) +
+               2 * f4 * (ppz * px - ppx * pz) * (ppz * py - ppy * pz);
+    }
+    else if (spin_tuple == std::make_tuple(1, -1, 1, 1))
+    {
+        return -(f4 * ppy * ppz * pow(px, 2)) + f3 * ppz * py +
+               f4 * ppx * ppz * px * py + f6 * (ppy - py) * (ppz - pz) -
+               f3 * ppy * pz + f4 * ppx * ppy * px * pz -
+               f4 * pow(ppx, 2) * py * pz + f5 * (ppy + py) * (ppz + pz);
+    }
+    else if (spin_tuple == std::make_tuple(1, -1, 1, -1))
+    {
+        return 0;
+    }
+    else if (spin_tuple == std::make_tuple(1, -1, -1, 1))
+    {
+        return 0;
+    }
+    else if (spin_tuple == std::make_tuple(1, -1, -1, -1))
+    {
+        return -(f4 * ppy * ppz * pow(px, 2)) + f3 * ppz * py +
+               f4 * ppx * ppz * px * py + f6 * (ppy - py) * (ppz - pz) -
+               f3 * ppy * pz + f4 * ppx * ppy * px * pz -
+               f4 * pow(ppx, 2) * py * pz + f5 * (ppy + py) * (ppz + pz);
+    }
+    else if (spin_tuple == std::make_tuple(-1, 1, 1, 1))
+    {
+        return -(f4 * ppy * ppz * pow(px, 2)) + f3 * ppz * py +
+               f4 * ppx * ppz * px * py + f6 * (ppy - py) * (ppz - pz) -
+               f3 * ppy * pz + f4 * ppx * ppy * px * pz -
+               f4 * pow(ppx, 2) * py * pz + f5 * (ppy + py) * (ppz + pz);
+    }
+    else if (spin_tuple == std::make_tuple(-1, 1, 1, -1))
+    {
+        return 0;
+    }
+    else if (spin_tuple == std::make_tuple(-1, 1, -1, 1))
+    {
+        return 0;
+    }
+    else if (spin_tuple == std::make_tuple(-1, 1, -1, -1))
+    {
+        return -(f4 * ppy * ppz * pow(px, 2)) + f3 * ppz * py +
+               f4 * ppx * ppz * px * py + f6 * (ppy - py) * (ppz - pz) -
+               f3 * ppy * pz + f4 * ppx * ppy * px * pz -
+               f4 * pow(ppx, 2) * py * pz + f5 * (ppy + py) * (ppz + pz);
+    }
+    else if (spin_tuple == std::make_tuple(-1, -1, 1, 1))
+    {
+        return 2 * (f6 * (ppx - px) * (ppy - py) +
+                    f5 * (ppx + px) * (ppy + py) -
+                    f4 * (ppz * px - ppx * pz) * (ppz * py - ppy * pz));
+    }
+    else if (spin_tuple == std::make_tuple(-1, -1, 1, -1))
+    {
+        return f4 * ppy * ppz * pow(px, 2) + f3 * ppz * py -
+               f4 * ppx * ppz * px * py - f6 * (ppy - py) * (ppz - pz) -
+               f3 * ppy * pz - f4 * ppx * ppy * px * pz +
+               f4 * pow(ppx, 2) * py * pz - f5 * (ppy + py) * (ppz + pz);
+    }
+    else if (spin_tuple == std::make_tuple(-1, -1, -1, 1))
+    {
+        return f4 * ppy * ppz * pow(px, 2) + f3 * ppz * py -
+               f4 * ppx * ppz * px * py - f6 * (ppy - py) * (ppz - pz) -
+               f3 * ppy * pz - f4 * ppx * ppy * px * pz +
+               f4 * pow(ppx, 2) * py * pz - f5 * (ppy + py) * (ppz + pz);
+    }
+    else if (spin_tuple == std::make_tuple(-1, -1, -1, -1))
+    {
+        return f3 * (-2 * ppy * px + 2 * ppx * py);
+    }
+    else
+    {
+        throw std::invalid_argument("Invalid spin configuration in function potential_auto_imag!");
     }
 }
 
@@ -509,8 +623,9 @@ std::vector<double> potential_n2lo_two_pion_exchange(double ppx, double ppy, dou
 }
 
 // total chiral nn potential.
-double potential_chiral_nn(const std::vector<double> &p_out, int s1_out, int s2_out,
-                           const std::vector<double> &p_in, int s1_in, int s2_in, const LECs_op &lecs)
+// real part.
+double potential_chiral_nn_real(const std::vector<double> &p_out, int s1_out, int s2_out,
+                                const std::vector<double> &p_in, int s1_in, int s2_in, const LECs_op &lecs)
 {
     // params p_out : final relative momentum p' 3-dim vector, in MeV
     // params p_in : initial relative momentum p 3-dim vector, in MeV
@@ -560,12 +675,69 @@ double potential_chiral_nn(const std::vector<double> &p_out, int s1_out, int s2_
     double ep = std::sqrt(Mnuc * Mnuc + ppmag * ppmag);
     double min_rel = std::sqrt(Mnuc / e) * std::sqrt(Mnuc / ep);
 
-    return potential_auto(f1, f2, f3, f4, f5, f6, ppx, ppy, ppz, px, py, pz, s1_out, s2_out, s1_in, s2_in) * min_rel / twopicubic;
+    return potential_auto_real(f1, f2, f3, f4, f5, f6, ppx, ppy, ppz, px, py, pz, s1_out, s2_out, s1_in, s2_in) * min_rel / twopicubic;
+}
+
+// total chiral nn potential.
+// imag part.
+double potential_chiral_nn_imag(const std::vector<double> &p_out, int s1_out, int s2_out,
+                                const std::vector<double> &p_in, int s1_in, int s2_in, const LECs_op &lecs)
+{
+    // params p_out : final relative momentum p' 3-dim vector, in MeV
+    // params p_in : initial relative momentum p 3-dim vector, in MeV
+    // params s1_out, s2_out : final spin of 2 nucleons(doubled)
+    // params s1_in, s2_in : initial spin of 2 nucleons(doubled)
+    // params lecs: LECs structure in operator basis
+    // return : interaction matrix elements in MeV^(-2)
+    double ppx = p_out[0];
+    double ppy = p_out[1];
+    double ppz = p_out[2];
+    double px = p_in[0];
+    double py = p_in[1];
+    double pz = p_in[2];
+    double ppmag = std::sqrt(ppx * ppx + ppy * ppy + ppz * ppz);
+    double pmag = std::sqrt(px * px + py * py + pz * pz);
+
+    std::vector<double> component_vec(6, 0.0);
+
+    // lo terms.
+    std::vector<double> lo_contact = potential_lo_contact(ppx, ppy, ppz, px, py, pz, lecs);
+    std::vector<double> one_pion_exchange = potential_one_pion_exchange_neutral(ppx, ppy, ppz, px, py, pz, lecs);
+
+    // nlo terms.
+    std::vector<double> nlo_contact = potential_nlo_contact(ppx, ppy, ppz, px, py, pz, lecs);
+    std::vector<double> nlo_two_pion_exchange = potential_nlo_two_pion_exchange(ppx, ppy, ppz, px, py, pz, lecs);
+
+    // n2lo terms.
+    std::vector<double> n2lo_two_pion_exchange = potential_n2lo_two_pion_exchange(ppx, ppy, ppz, px, py, pz, lecs);
+
+    for (size_t i = 0; i < component_vec.size(); ++i)
+    {
+        component_vec[i] += lo_contact[i] + one_pion_exchange[i];
+        component_vec[i] += nlo_contact[i] + nlo_two_pion_exchange[i];
+        component_vec[i] += n2lo_two_pion_exchange[i];
+    }
+
+    // total coefficients.
+    double f1 = component_vec[0];
+    double f2 = component_vec[1];
+    double f3 = component_vec[2];
+    double f4 = component_vec[3];
+    double f5 = component_vec[4];
+    double f6 = component_vec[5];
+
+    // minimal-relativity term.
+    double e = std::sqrt(Mnuc * Mnuc + pmag * pmag);
+    double ep = std::sqrt(Mnuc * Mnuc + ppmag * ppmag);
+    double min_rel = std::sqrt(Mnuc / e) * std::sqrt(Mnuc / ep);
+
+    return potential_auto_imag(f1, f2, f3, f4, f5, f6, ppx, ppy, ppz, px, py, pz, s1_out, s2_out, s1_in, s2_in) * min_rel / twopicubic;
 }
 
 // N2LO-EMN500 nn potential.
-double potential_nn_n2loemn500(const std::vector<double> &p_out, int s1_out, int s2_out,
-                               const std::vector<double> &p_in, int s1_in, int s2_in)
+// real part.
+double potential_nn_n2loemn500_real(const std::vector<double> &p_out, int s1_out, int s2_out,
+                                    const std::vector<double> &p_in, int s1_in, int s2_in)
 {
     // N2LO-EMN500 LECs.
     constexpr double Lambda = 500;
@@ -621,7 +793,69 @@ double potential_nn_n2loemn500(const std::vector<double> &p_out, int s1_out, int
     lecs_op.C_6 = std::get<7>(lecs_tuple_op);
     lecs_op.C_7 = std::get<8>(lecs_tuple_op);
 
-    return potential_chiral_nn(p_out, s1_out, s2_out, p_in, s1_in, s2_in, lecs_op);
+    return potential_chiral_nn_real(p_out, s1_out, s2_out, p_in, s1_in, s2_in, lecs_op);
+}
+
+// N2LO-EMN500 nn potential.
+// imag part.
+double potential_nn_n2loemn500_imag(const std::vector<double> &p_out, int s1_out, int s2_out,
+                                    const std::vector<double> &p_in, int s1_in, int s2_in)
+{
+    // N2LO-EMN500 LECs.
+    constexpr double Lambda = 500;
+    constexpr double Lambda_tilde = 650;
+    constexpr double c1 = -0.74 * 1e-3;
+    constexpr double c3 = -3.61 * 1e-3;
+    constexpr double c4 = 2.44 * 1e-3;
+    constexpr double CC1s0nn = -0.1509590 * 1e-2;
+    constexpr double CC3s1 = -0.1505605654300 * 1e-2;
+    constexpr double C1s0 = 2.336086454 * 1e-8;
+    constexpr double C3p0 = 1.0543302570000 * 1e-8;
+    constexpr double C1p1 = 0.1991325690000 * 1e-8;
+    constexpr double C3p1 = -0.8370121810000 * 1e-8;
+    constexpr double C3s1 = 0.4438916900000 * 1e-8;
+    constexpr double C3sd1 = 0.3511511310000 * 1e-8;
+    constexpr double C3p2 = -0.6365462590000 * 1e-8;
+
+    // ! special treatment for C3p1,
+    // because regulator in this channel in NLO contact potential is n=3, while other are n=2.
+    double ppx = p_out[0];
+    double ppy = p_out[1];
+    double ppz = p_out[2];
+    double px = p_in[0];
+    double py = p_in[1];
+    double pz = p_in[2];
+    double ppmag = std::sqrt(ppx * ppx + ppy * ppy + ppz * ppz);
+    double pmag = std::sqrt(px * px + py * py + pz * pz);
+    int n;
+    n = 2;
+    double regulator_n2 = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
+    n = 3;
+    double regulator_n3 = std::exp(-(std::pow(pmag, 2 * n) + std::pow(ppmag, 2 * n)) / std::pow(Lambda, 2 * n));
+    double regulator_factor_C3p1 = regulator_n3 / regulator_n2;
+
+    // transform to operator basis before aPWP.
+    auto lecs_tuple_pw = std::make_tuple(CC1s0nn, CC3s1, C1s0, C3p0, C1p1, C3p1 * regulator_factor_C3p1, C3s1, C3sd1, C3p2);
+    auto lecs_tuple_op = lecs_from_pw_to_op(lecs_tuple_pw);
+
+    // store LECs in the struct.
+    LECs_op lecs_op;
+    lecs_op.Lambda = Lambda;
+    lecs_op.Lambda_tilde = Lambda_tilde;
+    lecs_op.c_1 = c1;
+    lecs_op.c_3 = c3;
+    lecs_op.c_4 = c4;
+    lecs_op.C_S_nn = std::get<0>(lecs_tuple_op);
+    lecs_op.C_T_nn = std::get<1>(lecs_tuple_op);
+    lecs_op.C_1 = std::get<2>(lecs_tuple_op);
+    lecs_op.C_2 = std::get<3>(lecs_tuple_op);
+    lecs_op.C_3 = std::get<4>(lecs_tuple_op);
+    lecs_op.C_4 = std::get<5>(lecs_tuple_op);
+    lecs_op.C_5 = std::get<6>(lecs_tuple_op);
+    lecs_op.C_6 = std::get<7>(lecs_tuple_op);
+    lecs_op.C_7 = std::get<8>(lecs_tuple_op);
+
+    return potential_chiral_nn_imag(p_out, s1_out, s2_out, p_in, s1_in, s2_in, lecs_op);
 }
 
 // main shows how to use functions written above.
@@ -690,8 +924,9 @@ int main()
             {
                 for (int s2_in = -1; s2_in <= 1; s2_in = s2_in + 2)
                 {
-                    double mtx = potential_chiral_nn(p_out, s1_out, s2_out, p_in, s1_in, s2_in, lecs_op);
-                    std::cout << s1_out << "," << s2_out << "," << s1_in << "," << s2_in << "," << mtx << std::endl;
+                    double mtx_real = potential_chiral_nn_real(p_out, s1_out, s2_out, p_in, s1_in, s2_in, lecs_op);
+                    double mtx_imag = potential_chiral_nn_imag(p_out, s1_out, s2_out, p_in, s1_in, s2_in, lecs_op);
+                    std::cout << s1_out << "," << s2_out << "," << s1_in << "," << s2_in << "," << mtx_real << "," << mtx_imag << std::endl;
                 }
             }
         }
